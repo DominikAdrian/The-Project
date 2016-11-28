@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TheProject</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+  <body>
+
+    <!-- Navbar -->
+    <div class ="navbar navbar-default navbar-static-top">
+      <div class = "container">
+        <div class="navbar-header">        
+          <button class = "navbar-toggle" data-toggle = "collapse" data-target = ".navHeaderCollapse"></button>
+          <span class="sr-only nav-icons">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <a href = "/" class= "navbar-brand">ADRIAN</a>
+        </div>  
+
+        <div class ="collapse navbar-collapse navHeaderCollapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li class ="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Social Media <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Twitter</a></li>
+                <li><a href="#">Facebook</a></li>
+                <li><a href="#">Google+</a></li>
+                <li><a href="#">Instagramm</a></li>
+              </ul>
+            </li>
+            <li><a href="#" class="contactbutton" data-toggle="modal" data-target="#contactmodal">Contact</a></li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right"> 
+            <% if current_user %>
+              <li><a href="/profile"><%= current_user.name%></a></li>
+              <li class="profile-picture"><%= image_tag(@auth['info']['image'], width: '50', height:'50', class: 'img-circle')%></li>
+              <li><%= link_to "Log Out", 'sign_out', method: :delete%></li>
+            <% else %>
+              <a href="#" class="newactivitybutton btn btn-lg main-button" data-toggle="modal" data-target="#loginmodal">Login</a>
+            <% end %>   
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <% flash.each do |key, value| %>
+      <div class="alert alert-info"><%= value %></div> 
+    <% end %>
+    
+    <% if current_user %>
+      <div class="text-center">
+        <h2>Welcome Back, <%= current_user.name %>!</h2>
+      </div>
+    <% end %>
+
+    <!-- Login Modal -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="loginmodal">
+      <div class="modal-dialog ">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">Please Login</h4>
+          </div>
+          <div class="Intro"> </div>
+          <div class="modal-body">
+            <div class="signupform">
+              <ul class="tab-group">
+                <li class="tab active"><a href="#login" class="signupa">Log In</a></li>
+                <li class="tab"><a href="#signup" class="signupa">Sign Up</a></li>                
+              </ul>
+
+                <div class="tab-content">
+
+                  <!-- Login -->
+                  <div id="login">
+                    <h1 class="signupheading">Log In With Social Media:</h1>
+                    <div class="field-wrap">
+                      <span class="fb-login"><%= link_to image_tag("facebook-icon.png", width: '80', height: '80'), "/auth/facebook"%></span>
+                    </div>
+                    <div class="or"></div>
+                    <h1 class="signupheading">Log In With Email Adress:</h1>
+
+                    <!-- Login Form -->
+                    <form action="/login" method="post">
+
+                      <div class="field-wrap">
+                        <label class="signuplabel">
+                          Email Address<span class="req">*</span>
+                        </label>
+                        <input name="user[email]" class="signupinput" type="email"required autocomplete="off"/>
+                      </div>
+
+                       <div class="field-wrap">
+                        <label class="signuplabel">
+                          Password<span class="req">*</span>
+                        </label>
+                        <input name="user[password]" class="signupinput" type="password"required autocomplete="off"/>
+                       </div>
+
+                      <input  type="hidden" name="authenticity_token" placeholder="<%= form_authenticity_token %>">
+                      <button type="submit" class="buttonsignup button-block"/>Log In</button>
+                    </form>
+                  </div> <!-- /Login  -->
+
+                  <!-- Sign Up -->
+                  <div id="signup">
+                    <div class="field-wrap">
+                      <span class="fb-login"><%= link_to image_tag("facebook-icon.png", width: '80', height: '80', class: 'img-circle'), "/auth/facebook"%></span>
+                    </div>
+                    <div class="or"></div>
+                    <h1 class="signupheading">Sign Up With Your Email Adress</h1>
+
+                          <!-- Sign Up Form -->
+                          <form action='/users' method="post">
+                            <div class="field-wrap">
+                              <label class="signuplabel">
+                                Username<span class="req">*</span>
+                              </label>
+                              <input name="user[username]" class="signupinput" type="text"required autocomplete="off"/>
+                            </div>
+
+                            <div class="field-wrap">
+                              <label class="signuplabel">
+                                Email Address<span class="req">*</span>
+                              </label>
+                              <input name="user[email]" class="signupinput" type="email"required autocomplete="off"/>
+                            </div>
+
+                            <div class="field-wrap">
+                              <label class="signuplabel">
+                                Password<span class="req">*</span>
+                              </label>
+                              <input name="user[password]" class="signupinput" type="password"required autocomplete="off"/>
+                            </div>
+
+                            <div class="field-wrap">
+                              <label class="signuplabel">
+                                Confirm Password<span class="req">*</span>
+                              </label>
+                              <input name="user[password_confirmation]" class="signupinput" type="password"required autocomplete="off"/>
+                            </div>
+
+                            <input  type="hidden" name="authenticity_token" placeholder="<%= form_authenticity_token %>">
+                            <button type="submit" class="buttonsignup button-block"/>Get Started</button>
+
+                          </form>
+                  </div><!-- /.signup -->                      
+                </div><!-- tab-content -->
+              </div><!-- /.signupform -->
+            </div><!-- /.modal-body -->
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+
+          </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div> <!-- Modal End -->
+
+
+    <!-- Contact Modal -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="contactmodal">
+      <div class="modal-dialog ">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">Get In Touch With Us!</h4>
+          </div>
+          <div class="Intro"></div>
+          <!-- Modal Body -->
+          <div class="modal-body">
+            <div class="container">
+              <form action=" " method="post"  id="contact_form">
+                <fieldset class="contact-fieldset">
+                  <!-- Text input-->
+                  <div class="form-group"> 
+                    <div class="input-group">
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                      <input  name="first_name" placeholder="First Name" class="form-control"  type="text">
+                    </div>
+                  </div>
+                  <!-- Text input-->
+                  <div class="form-group">
+                      <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                    <input name="last_name" placeholder="Last Name" class="form-control"  type="text">
+                      </div>
+                  </div>
+                  <!-- Text input-->
+                  <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+                        <input name="email" placeholder="E-Mail Address" class="form-control"  type="text">
+                      </div>
+                  </div>
+                  <!-- Text input-->      
+                  <div class="form-group"> 
+                      <div class="input-group">
+                          <span class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></span>
+                          <input name="phone" placeholder="+1 (845) 555-1212" class="form-control" type="text">
+                      </div>
+                  </div>
+                  <!-- Text area -->  
+                  <div class="form-group">
+                      <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                        <textarea class="form-control" name="comment" placeholder="Message"></textarea>
+                      </div>
+                  </div>
+                  <!-- Success message -->
+                  <div class="alert alert-success" role="alert" id="success_message">Success <i class="glyphicon glyphicon-thumbs-up"></i> Thanks you for contacting us, we will get back to you shortly.</div>
+                  <!-- Button -->
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-warning">Send <span class="glyphicon glyphicon-send"></span></button>
+                  </div>
+                </fieldset>
+              </form>
+            </div><!-- /.container -->
+          </div><!-- /.modal-body -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div> <!-- Modal End -->
+
+ 
+
+
+
+    <%= yield %>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  </body>
+</html>
